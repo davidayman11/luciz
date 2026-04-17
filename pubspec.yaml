@@ -1,0 +1,36 @@
+name: luciz
+description: "Luci'z food delivery app."
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.11.1
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+  flutter_svg: ^2.0.10+1
+  shared_preferences: ^2.3.3
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/images/luciz_logo.svg
+    - assets/images/logo.svg
+    - assets/images/on1.svg
+    - assets/images/on2.svg
+    - assets/images/on3.svg
+    - assets/images/nav/
+
+  fonts:
+    - family: Alexandria
+      fonts:
+        - asset: assets/fonts/Alexandria-VariableFont_wght.ttf
