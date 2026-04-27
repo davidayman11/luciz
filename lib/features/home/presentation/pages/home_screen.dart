@@ -1,12 +1,3 @@
-// =============================================================================
-// HOME SCREEN — bottom nav + 4 empty tabs
-// -----------------------------------------------------------------------------
-// [A] Scaffold background
-// [B] App bar (optional per product)
-// [C] Tab bodies: [IndexedStack] keeps state when switching tabs
-// [D] Bottom bar: [LucizHomeBottomNav] + SVGs in assets/images/nav/
-// =============================================================================
-
 import 'package:flutter/material.dart';
 
 import '../../../../core/router/app_routes.dart';
@@ -46,7 +37,11 @@ class _HomeScreenState extends State<HomeScreen> {
       bottomNavigationBar: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Divider(height: 1, thickness: 1, color: LucizColors.inputBorder),
+          const Divider(
+            height: 1,
+            thickness: 1,
+            color: LucizColors.inputBorder,
+          ),
           SafeArea(
             top: false,
             child: LucizHomeBottomNav(
