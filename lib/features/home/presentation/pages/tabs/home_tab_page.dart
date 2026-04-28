@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -16,9 +18,31 @@ class _HomeTabPageState extends State<HomeTabPage> {
   int bannerIndex = 0;
 
   final PageController _bannerController = PageController();
+  Timer? _bannerTimer;
+
+  @override
+  void initState() {
+    super.initState();
+    _startBannerAutoSlide();
+  }
+
+  void _startBannerAutoSlide() {
+    _bannerTimer = Timer.periodic(const Duration(seconds: 3), (_) {
+      if (!_bannerController.hasClients) return;
+
+      final nextIndex = bannerIndex == 2 ? 0 : bannerIndex + 1;
+
+      _bannerController.animateToPage(
+        nextIndex,
+        duration: const Duration(milliseconds: 450),
+        curve: Curves.easeInOut,
+      );
+    });
+  }
 
   @override
   void dispose() {
+    _bannerTimer?.cancel();
     _bannerController.dispose();
     super.dispose();
   }
@@ -27,177 +51,199 @@ class _HomeTabPageState extends State<HomeTabPage> {
   Widget build(BuildContext context) {
     final s = LucizScale.of(context);
 
-    return SafeArea(
-      child: SingleChildScrollView(
-        padding: EdgeInsets.fromLTRB(s.w(10), s.h(6), s.w(10), s.h(20)),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _Header(s: s),
-            SizedBox(height: s.h(18)),
-
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: s.w(8)),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  _OrderType(
-                    s: s,
-                    title: 'Delivery',
-                    asset: 'assets/images/delivery_icon.svg',
-                    selected: selectedOrderType == 0,
-                    onTap: () => setState(() => selectedOrderType = 0),
-                  ),
-                  _OrderType(
-                    s: s,
-                    title: 'Self-pickup',
-                    asset: 'assets/images/self_pickup_icon.svg',
-                    selected: selectedOrderType == 1,
-                    onTap: () => setState(() => selectedOrderType = 1),
-                  ),
-                  _OrderType(
-                    s: s,
-                    title: 'Dine-in',
-                    asset: 'assets/images/dine_in_icon.svg',
-                    selected: selectedOrderType == 2,
-                    onTap: () => setState(() => selectedOrderType = 2),
-                  ),
-                ],
-              ),
-            ),
-
-            SizedBox(height: s.h(24)),
-
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: s.w(8)),
-              child: _SectionTitle(s: s, title: 'Special offers'),
-            ),
-
-            SizedBox(height: s.h(10)),
-
-            SizedBox(
-              height: s.h(178),
-              child: PageView.builder(
-                controller: _bannerController,
-                itemCount: 3,
-                onPageChanged: (i) => setState(() => bannerIndex = i),
-                itemBuilder: (context, index) {
-                  return Padding(
-                    padding: EdgeInsets.symmetric(horizontal: s.w(8)),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(s.r(10)),
-                      child: Image.asset(
-                        'assets/images/Special_Offers.png',
-                        fit: BoxFit.cover,
-                        width: double.infinity,
-                        height: double.infinity,
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ),
-
-            SizedBox(height: s.h(9)),
-
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: List.generate(3, (i) {
-                final active = i == bannerIndex;
-                return AnimatedContainer(
-                  duration: const Duration(milliseconds: 200),
-                  margin: EdgeInsets.symmetric(horizontal: s.w(4)),
-                  width: active ? s.w(25) : s.w(18),
-                  height: s.h(4),
-                  decoration: BoxDecoration(
-                    color: active
-                        ? LucizColors.brandRed
-                        : const Color(0xFFE0E0E0),
-                    borderRadius: BorderRadius.circular(s.r(20)),
-                  ),
-                );
-              }),
-            ),
-
-            SizedBox(height: s.h(26)),
-
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: s.w(8)),
-              child: _SectionTitle(s: s, title: 'Our menu'),
-            ),
-
-            SizedBox(height: s.h(12)),
-
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: s.w(8)),
-              child: GridView.count(
-                crossAxisCount: 3,
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                crossAxisSpacing: s.w(10),
-                mainAxisSpacing: s.h(14),
-                childAspectRatio: 0.95,
-                children: [
-                  _MenuCard(
-                    s: s,
-                    title: 'Burgers',
-                    asset: 'assets/images/Burgers_logo.png',
-                    imageWidth: 112,
-                    imageHeight: 88,
-                    right: -40,
-                    bottom: -4,
-                  ),
-                  _MenuCard(
-                    s: s,
-                    title: 'Chicken',
-                    asset: 'assets/images/Chicken_logo.png',
-                    imageWidth: 116,
-                    imageHeight: 90,
-                    right: -25,
-                    bottom: -5,
-                  ),
-                  _MenuCard(
-                    s: s,
-                    title: 'Sides',
-                    asset: 'assets/images/Sides_logo.png',
-                    imageWidth: 112,
-                    imageHeight: 88,
-                    right: -25,
-                    bottom: -4,
-                  ),
-                  _MenuCard(
-                    s: s,
-                    title: 'Drinks',
-                    asset: 'assets/images/Drinks_logo.png',
-                    imageWidth: 116,
-                    imageHeight: 92,
-                    right: -25,
-                    bottom: -8,
-                  ),
-                  _MenuCard(
-                    s: s,
-                    title: 'Desserts',
-                    asset: 'assets/images/Desserts_logo.png',
-                    imageWidth: 108,
-                    imageHeight: 92,
-                    right: -40,
-                    bottom: -8,
-                  ),
-                  _MenuCard(
-                    s: s,
-                    title: 'Extras',
-                    asset: 'assets/images/Extras_logo.png',
-                    imageWidth: 108,
-                    imageHeight: 92,
-                    right: -25,
-                    bottom: -8,
-                  ),
-                ],
-              ),
-            ),
-          ],
+    return Stack(
+      children: [
+        Positioned(
+          top: 0,
+          left: 0,
+          right: 0,
+          child: Image.asset(
+            'assets/images/home_page_cover.png',
+            height: s.h(210),
+            fit: BoxFit.cover,
+          ),
         ),
-      ),
+        SafeArea(
+          child: SingleChildScrollView(
+            padding: EdgeInsets.fromLTRB(s.w(10), s.h(6), s.w(10), s.h(20)),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _Header(s: s),
+                SizedBox(height: s.h(18)),
+
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: s.w(8)),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      _OrderType(
+                        s: s,
+                        title: 'Delivery',
+                        asset: 'assets/images/delivery_icon.svg',
+                        selected: selectedOrderType == 0,
+                        onTap: () => setState(() => selectedOrderType = 0),
+                      ),
+                      _OrderType(
+                        s: s,
+                        title: 'Self-pickup',
+                        asset: 'assets/images/self_pickup_icon.svg',
+                        selected: selectedOrderType == 1,
+                        onTap: () => setState(() => selectedOrderType = 1),
+                      ),
+                      _OrderType(
+                        s: s,
+                        title: 'Dine-in',
+                        asset: 'assets/images/dine_in_icon.svg',
+                        selected: selectedOrderType == 2,
+                        onTap: () => setState(() => selectedOrderType = 2),
+                      ),
+                    ],
+                  ),
+                ),
+
+                SizedBox(height: s.h(24)),
+
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: s.w(8)),
+                  child: _SectionTitle(
+                    s: s,
+                    title: 'Special offers',
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+
+                SizedBox(height: s.h(10)),
+
+                SizedBox(
+                  height: s.h(140),
+                  child: PageView.builder(
+                    controller: _bannerController,
+                    itemCount: 3,
+                    onPageChanged: (i) => setState(() => bannerIndex = i),
+                    itemBuilder: (context, index) {
+                      return Padding(
+                        padding: EdgeInsets.symmetric(horizontal: s.w(8)),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(s.r(10)),
+                          child: Image.asset(
+                            'assets/images/Special_Offers.png',
+                            fit: BoxFit.cover,
+                            width: double.infinity,
+                            height: double.infinity,
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+
+                SizedBox(height: s.h(9)),
+
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: List.generate(3, (i) {
+                    final active = i == bannerIndex;
+                    return AnimatedContainer(
+                      duration: const Duration(milliseconds: 200),
+                      margin: EdgeInsets.symmetric(horizontal: s.w(4)),
+                      width: active ? s.w(25) : s.w(18),
+                      height: s.h(4),
+                      decoration: BoxDecoration(
+                        color: active
+                            ? LucizColors.brandRed
+                            : const Color(0xFFE0E0E0),
+                        borderRadius: BorderRadius.circular(s.r(20)),
+                      ),
+                    );
+                  }),
+                ),
+
+                SizedBox(height: s.h(26)),
+
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: s.w(8)),
+                  child: _SectionTitle(
+                    s: s,
+                    title: 'Our menu',
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+
+                SizedBox(height: s.h(12)),
+
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: s.w(8)),
+                  child: GridView.count(
+                    crossAxisCount: 3,
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    crossAxisSpacing: s.w(10),
+                    mainAxisSpacing: s.h(14),
+                    childAspectRatio: 0.95,
+                    children: [
+                      _MenuCard(
+                        s: s,
+                        title: 'Burgers',
+                        asset: 'assets/images/Burgers_logo.png',
+                        imageWidth: 112,
+                        imageHeight: 90,
+                        right: -30,
+                        bottom: -4,
+                      ),
+                      _MenuCard(
+                        s: s,
+                        title: 'Chicken',
+                        asset: 'assets/images/Chicken_logo.png',
+                        imageWidth: 116,
+                        imageHeight: 98,
+                        right: -25,
+                        bottom: -5,
+                      ),
+                      _MenuCard(
+                        s: s,
+                        title: 'Sides',
+                        asset: 'assets/images/Sides_logo.png',
+                        imageWidth: 112,
+                        imageHeight: 90,
+                        right: -26,
+                        bottom: -4,
+                      ),
+                      _MenuCard(
+                        s: s,
+                        title: 'Drinks',
+                        asset: 'assets/images/Drinks_logo.png',
+                        imageWidth: 116,
+                        imageHeight: 92,
+                        right: -25,
+                        bottom: -8,
+                      ),
+                      _MenuCard(
+                        s: s,
+                        title: 'Desserts',
+                        asset: 'assets/images/Desserts_logo.png',
+                        imageWidth: 120,
+                        imageHeight: 95,
+                        right: -33,
+                        bottom: -4,
+                      ),
+                      _MenuCard(
+                        s: s,
+                        title: 'Extras',
+                        asset: 'assets/images/Extras_logo.png',
+                        imageWidth: 108,
+                        imageHeight: 92,
+                        right: -25,
+                        bottom: -8,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
@@ -345,10 +391,12 @@ class _SectionTitle extends StatelessWidget {
   const _SectionTitle({
     required this.s,
     required this.title,
+    this.fontWeight,
   });
 
   final LucizScale s;
   final String title;
+  final FontWeight? fontWeight;
 
   @override
   Widget build(BuildContext context) {
@@ -356,8 +404,8 @@ class _SectionTitle extends StatelessWidget {
       title,
       style: TextStyle(
         fontFamily: 'Alexandria',
-        fontSize: s.font(18),
-        fontWeight: FontWeight.w800,
+        fontSize: s.font(16),
+        fontWeight: fontWeight ?? FontWeight.w800,
         color: Colors.black,
       ),
     );
@@ -423,10 +471,7 @@ class _MenuCard extends StatelessWidget {
 }
 
 class _GradientText extends StatelessWidget {
-  const _GradientText(
-    this.text, {
-    required this.style,
-  });
+  const _GradientText(this.text, {required this.style});
 
   final String text;
   final TextStyle style;
@@ -436,13 +481,8 @@ class _GradientText extends StatelessWidget {
     return ShaderMask(
       shaderCallback: (bounds) {
         return const LinearGradient(
-          colors: [
-            Color(0xFFEC2024),
-            Color(0xFFFF9300),
-          ],
-        ).createShader(
-          Rect.fromLTWH(0, 0, bounds.width, bounds.height),
-        );
+          colors: [Color(0xFFEC2024), Color(0xFFFF9300)],
+        ).createShader(Rect.fromLTWH(0, 0, bounds.width, bounds.height));
       },
       blendMode: BlendMode.srcIn,
       child: Text(text, style: style),
