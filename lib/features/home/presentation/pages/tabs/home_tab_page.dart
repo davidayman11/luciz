@@ -44,16 +44,13 @@ class _HomeTabPageState extends State<HomeTabPage> {
     ),
   ];
 
-  int get cartCount {
-    return products.fold<int>(0, (sum, item) => sum + item.quantity);
-  }
+  int get cartCount =>
+      products.fold<int>(0, (sum, item) => sum + item.quantity);
 
-  int get cartTotal {
-    return products.fold<int>(
-      0,
-      (sum, item) => sum + (item.price * item.quantity),
-    );
-  }
+  int get cartTotal => products.fold<int>(
+        0,
+        (sum, item) => sum + (item.price * item.quantity),
+      );
 
   bool get hasCartItems => cartCount > 0;
 
@@ -66,9 +63,7 @@ class _HomeTabPageState extends State<HomeTabPage> {
   void _startBannerAutoSlide() {
     _bannerTimer = Timer.periodic(const Duration(seconds: 3), (_) {
       if (!_bannerController.hasClients) return;
-
       final nextIndex = bannerIndex == 2 ? 0 : bannerIndex + 1;
-
       _bannerController.animateToPage(
         nextIndex,
         duration: const Duration(milliseconds: 450),
@@ -78,16 +73,12 @@ class _HomeTabPageState extends State<HomeTabPage> {
   }
 
   void _increaseProduct(int index) {
-    setState(() {
-      products[index].quantity++;
-    });
+    setState(() => products[index].quantity++);
   }
 
   void _decreaseProduct(int index) {
     setState(() {
-      if (products[index].quantity > 0) {
-        products[index].quantity--;
-      }
+      if (products[index].quantity > 0) products[index].quantity--;
     });
   }
 
@@ -114,7 +105,6 @@ class _HomeTabPageState extends State<HomeTabPage> {
             fit: BoxFit.cover,
           ),
         ),
-
         SafeArea(
           child: SingleChildScrollView(
             padding: EdgeInsets.fromLTRB(
@@ -128,7 +118,6 @@ class _HomeTabPageState extends State<HomeTabPage> {
               children: [
                 _Header(s: s),
                 SizedBox(height: s.h(18)),
-
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: s.w(8)),
                   child: Row(
@@ -163,9 +152,7 @@ class _HomeTabPageState extends State<HomeTabPage> {
                     ],
                   ),
                 ),
-
                 SizedBox(height: s.h(24)),
-
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: s.w(8)),
                   child: _SectionTitle(
@@ -174,9 +161,7 @@ class _HomeTabPageState extends State<HomeTabPage> {
                     fontWeight: FontWeight.w500,
                   ),
                 ),
-
                 SizedBox(height: s.h(10)),
-
                 SizedBox(
                   height: s.h(160),
                   child: PageView.builder(
@@ -200,9 +185,7 @@ class _HomeTabPageState extends State<HomeTabPage> {
                     },
                   ),
                 ),
-
                 SizedBox(height: s.h(9)),
-
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: List.generate(3, (i) {
@@ -221,9 +204,7 @@ class _HomeTabPageState extends State<HomeTabPage> {
                     );
                   }),
                 ),
-
                 SizedBox(height: s.h(26)),
-
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: s.w(8)),
                   child: _SectionTitle(
@@ -232,9 +213,7 @@ class _HomeTabPageState extends State<HomeTabPage> {
                     fontWeight: FontWeight.w500,
                   ),
                 ),
-
                 SizedBox(height: s.h(12)),
-
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: s.w(8)),
                   child: GridView.count(
@@ -302,9 +281,7 @@ class _HomeTabPageState extends State<HomeTabPage> {
                     ],
                   ),
                 ),
-
                 SizedBox(height: s.h(23)),
-
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: s.w(2)),
                   child: _SectionTitle(
@@ -314,9 +291,7 @@ class _HomeTabPageState extends State<HomeTabPage> {
                     color: LucizColors.brandRed,
                   ),
                 ),
-
                 SizedBox(height: s.h(10)),
-
                 ListView.separated(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
@@ -324,7 +299,6 @@ class _HomeTabPageState extends State<HomeTabPage> {
                   separatorBuilder: (_, __) => SizedBox(height: s.h(14)),
                   itemBuilder: (context, index) {
                     final product = products[index];
-
                     return _RecommendedProductCard(
                       s: s,
                       product: product,
@@ -338,24 +312,38 @@ class _HomeTabPageState extends State<HomeTabPage> {
           ),
         ),
 
-        if (hasCartItems)
-          Positioned(
-            left: s.w(12),
-            right: s.w(12),
-            bottom: s.h(10),
-            child: SafeArea(
-              top: false,
-              child: _CartBar(
-                s: s,
-                cartCount: cartCount,
-                cartTotal: cartTotal,
+        // ── Cart bar: slide up from bottom + fade, ناعمة وخفيفة ──
+        Positioned(
+          left: s.w(12),
+          right: s.w(12),
+          bottom: s.h(10),
+          child: SafeArea(
+            top: false,
+            child: AnimatedSlide(
+              duration: const Duration(milliseconds: 400),
+              curve: Curves.easeOutCubic,
+              offset: hasCartItems ? Offset.zero : const Offset(0, 2),
+              child: AnimatedOpacity(
+                duration: const Duration(milliseconds: 350),
+                curve: Curves.easeOut,
+                opacity: hasCartItems ? 1.0 : 0.0,
+                child: _CartBar(
+                  s: s,
+                  cartCount: cartCount,
+                  cartTotal: cartTotal,
+                ),
               ),
             ),
           ),
+        ),
       ],
     );
   }
 }
+
+// ─────────────────────────────────────────────
+// Models & simple widgets (unchanged)
+// ─────────────────────────────────────────────
 
 class _ProductItem {
   _ProductItem({
@@ -375,7 +363,6 @@ class _ProductItem {
 
 class _Header extends StatelessWidget {
   const _Header({required this.s});
-
   final LucizScale s;
 
   @override
@@ -482,7 +469,6 @@ class _OrderType extends StatelessWidget {
   Widget build(BuildContext context) {
     final Color borderColor =
         selected ? LucizColors.brandRed : const Color(0xFFA3A3A3);
-
     final double circleSize = selected ? s.r(82) : s.r(72);
     final double iconSize = selected ? s.r(54) : s.r(46);
 
@@ -507,10 +493,7 @@ class _OrderType extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: Colors.white,
                     shape: BoxShape.circle,
-                    border: Border.all(
-                      color: borderColor,
-                      width: selected ? s.r(2.6) : s.r(2),
-                    ),
+                    border: Border.all(color: borderColor, width: selected ? s.r(2.6) : s.r(2)),
                   ),
                   child: Center(
                     child: AnimatedContainer(
@@ -540,11 +523,7 @@ class _OrderType extends StatelessWidget {
                     fontWeight: FontWeight.w700,
                     color: borderColor,
                   ),
-                  child: Text(
-                    title,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
+                  child: Text(title, maxLines: 1, overflow: TextOverflow.ellipsis),
                 ),
               ),
             ),
@@ -640,6 +619,10 @@ class _MenuCard extends StatelessWidget {
   }
 }
 
+// ─────────────────────────────────────────────
+// Product card — AnimatedSwitcher ناعم بدون bounce
+// ─────────────────────────────────────────────
+
 class _RecommendedProductCard extends StatelessWidget {
   const _RecommendedProductCard({
     required this.s,
@@ -662,10 +645,7 @@ class _RecommendedProductCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(s.r(9)),
-        border: Border.all(
-          color: const Color(0xFFE8E8E8),
-          width: 1,
-        ),
+        border: Border.all(color: const Color(0xFFE8E8E8), width: 1),
         boxShadow: [
           BoxShadow(
             blurRadius: 5,
@@ -682,13 +662,9 @@ class _RecommendedProductCard extends StatelessWidget {
             bottom: s.h(16),
             child: SizedBox(
               width: s.w(98),
-              child: Image.asset(
-                product.asset,
-                fit: BoxFit.contain,
-              ),
+              child: Image.asset(product.asset, fit: BoxFit.contain),
             ),
           ),
-
           Positioned(
             left: s.w(125),
             right: s.w(14),
@@ -705,7 +681,6 @@ class _RecommendedProductCard extends StatelessWidget {
               ),
             ),
           ),
-
           Positioned(
             left: s.w(125),
             right: s.w(18),
@@ -723,7 +698,6 @@ class _RecommendedProductCard extends StatelessWidget {
               ),
             ),
           ),
-
           Positioned(
             left: s.w(125),
             bottom: s.h(17),
@@ -738,29 +712,56 @@ class _RecommendedProductCard extends StatelessWidget {
             ),
           ),
 
+          // ── Smooth AnimatedSwitcher: fade + scale خفيف بدون bounce ──
           Positioned(
-  right: s.w(10),
-  bottom: s.h(10),
-  child: hasQuantity
-      ? _QuantityOutlineControl(
-          s: s,
-          quantity: product.quantity,
-          onRemove: onRemove,
-          onAdd: onAdd,
-        )
-      : _AddButton(
-          s: s,
-          onTap: onAdd,
-        ),
-),
+            right: s.w(10),
+            bottom: s.h(10),
+            child: AnimatedSwitcher(
+              duration: const Duration(milliseconds: 320),
+              switchInCurve: Curves.easeOut,
+              switchOutCurve: Curves.easeIn,
+              transitionBuilder: (child, animation) {
+                return FadeTransition(
+                  opacity: animation,
+                  child: ScaleTransition(
+                    scale: Tween<double>(begin: 0.82, end: 1.0).animate(
+                      CurvedAnimation(
+                        parent: animation,
+                        curve: Curves.easeOut,
+                      ),
+                    ),
+                    child: child,
+                  ),
+                );
+              },
+              child: hasQuantity
+                  ? _QuantityOutlineControl(
+                      key: const ValueKey('quantity'),
+                      s: s,
+                      quantity: product.quantity,
+                      onRemove: onRemove,
+                      onAdd: onAdd,
+                    )
+                  : _AddButton(
+                      key: const ValueKey('add'),
+                      s: s,
+                      onTap: onAdd,
+                    ),
+            ),
+          ),
         ],
       ),
     );
   }
 }
 
+// ─────────────────────────────────────────────
+// Quantity control — رقم بيتغير بـ fade ناعم
+// ─────────────────────────────────────────────
+
 class _QuantityOutlineControl extends StatelessWidget {
   const _QuantityOutlineControl({
+    super.key,
     required this.s,
     required this.quantity,
     required this.onRemove,
@@ -776,19 +777,11 @@ class _QuantityOutlineControl extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       height: s.h(36),
-      padding: EdgeInsets.fromLTRB(
-        s.w(4),
-        s.h(3),
-        s.w(3),
-        s.h(3),
-      ),
+      padding: EdgeInsets.fromLTRB(s.w(4), s.h(3), s.w(3), s.h(3)),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(s.r(999)),
-        border: Border.all(
-          color: const Color(0xFFE1E1E1),
-          width: s.r(1),
-        ),
+        border: Border.all(color: const Color(0xFFE1E1E1), width: s.r(1)),
         boxShadow: [
           BoxShadow(
             blurRadius: 7,
@@ -810,22 +803,43 @@ class _QuantityOutlineControl extends StatelessWidget {
                 color: Color(0xFFF1F1F1),
                 shape: BoxShape.circle,
               ),
-              child: Icon(
-                quantity == 1 ? Icons.delete_outline : Icons.remove,
-                size: quantity == 1 ? s.r(18) : s.r(19),
-                color: const Color(0xFF7F7F7F),
+              child: Center(
+                child: quantity == 1
+                    ? SvgPicture.asset(
+                        'assets/images/trash-icon.svg',
+                        width: s.r(18),
+                        height: s.r(18),
+                        fit: BoxFit.contain,
+                        colorFilter: const ColorFilter.mode(
+                          Color(0xFF7F7F7F),
+                          BlendMode.srcIn,
+                        ),
+                      )
+                    : Icon(Icons.remove, size: s.r(19), color: const Color(0xFF7F7F7F)),
               ),
             ),
           ),
           SizedBox(width: s.w(11)),
-          Text(
-            '$quantity',
-            style: TextStyle(
-              fontFamily: 'Alexandria',
-              fontSize: s.font(17),
-              fontWeight: FontWeight.w800,
-              color: Colors.black,
-              height: 1,
+          // الرقم بيتغير بـ fade ناعم
+          AnimatedSwitcher(
+            duration: const Duration(milliseconds: 200),
+            switchInCurve: Curves.easeOut,
+            switchOutCurve: Curves.easeIn,
+            transitionBuilder: (child, animation) {
+              return FadeTransition(opacity: animation, child: child);
+            },
+            child: Text(
+              '$quantity',
+              key: ValueKey(quantity),
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontFamily: 'Poppins',
+                fontSize: s.font(14),
+                fontWeight: FontWeight.w600,
+                color: const Color(0xFF000000),
+                height: 1.0,
+                letterSpacing: 0,
+              ),
             ),
           ),
           SizedBox(width: s.w(11)),
@@ -846,11 +860,7 @@ class _QuantityOutlineControl extends StatelessWidget {
                   ),
                 ],
               ),
-              child: Icon(
-                Icons.add,
-                size: s.r(27),
-                color: Colors.white,
-              ),
+              child: Icon(Icons.add, size: s.r(27), color: Colors.white),
             ),
           ),
         ],
@@ -860,10 +870,7 @@ class _QuantityOutlineControl extends StatelessWidget {
 }
 
 class _AddButton extends StatelessWidget {
-  const _AddButton({
-    required this.s,
-    required this.onTap,
-  });
+  const _AddButton({super.key, required this.s, required this.onTap});
 
   final LucizScale s;
   final VoidCallback onTap;
@@ -887,11 +894,7 @@ class _AddButton extends StatelessWidget {
             ),
           ],
         ),
-        child: Icon(
-          Icons.add,
-          size: s.r(22),
-          color: Colors.white,
-        ),
+        child: Icon(Icons.add, size: s.r(22), color: Colors.white),
       ),
     );
   }

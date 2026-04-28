@@ -45,6 +45,7 @@ flutter:
     - assets/images/Desserts_logo.png
     - assets/images/Extras_logo.png
     - assets/images/home_page_cover.png
+    - assets/images/trash-icon.svg
 
   fonts:
     - family: Alexandria
