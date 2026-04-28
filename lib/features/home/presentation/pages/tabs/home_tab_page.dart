@@ -76,25 +76,29 @@ class _HomeTabPageState extends State<HomeTabPage> {
                   padding: EdgeInsets.symmetric(horizontal: s.w(8)),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       _OrderType(
                         s: s,
                         title: 'Delivery',
-                        asset: 'assets/images/delivery_icon.svg',
+                        selectedAsset: 'assets/images/delivery_icon.svg',
+                        unselectedAsset: 'assets/images/Delivery-unselected.svg',
                         selected: selectedOrderType == 0,
                         onTap: () => setState(() => selectedOrderType = 0),
                       ),
                       _OrderType(
                         s: s,
                         title: 'Self-pickup',
-                        asset: 'assets/images/self_pickup_icon.svg',
+                        selectedAsset: 'assets/images/pickup-selected.svg',
+                        unselectedAsset: 'assets/images/self_pickup_icon.svg',
                         selected: selectedOrderType == 1,
                         onTap: () => setState(() => selectedOrderType = 1),
                       ),
                       _OrderType(
                         s: s,
                         title: 'Dine-in',
-                        asset: 'assets/images/dine_in_icon.svg',
+                        selectedAsset: 'assets/images/dine-in-selected.svg',
+                        unselectedAsset: 'assets/images/dine_in_icon.svg',
                         selected: selectedOrderType == 2,
                         onTap: () => setState(() => selectedOrderType = 2),
                       ),
@@ -116,7 +120,7 @@ class _HomeTabPageState extends State<HomeTabPage> {
                 SizedBox(height: s.h(10)),
 
                 SizedBox(
-                  height: s.h(140),
+                  height: s.h(160),
                   child: PageView.builder(
                     controller: _bannerController,
                     itemCount: 3,
@@ -125,7 +129,8 @@ class _HomeTabPageState extends State<HomeTabPage> {
                       return Padding(
                         padding: EdgeInsets.symmetric(horizontal: s.w(8)),
                         child: ClipRRect(
-                          borderRadius: BorderRadius.circular(s.r(10)),
+                          borderRadius: BorderRadius.circular(s.r(15)),
+                          clipBehavior: Clip.antiAlias,
                           child: Image.asset(
                             'assets/images/Special_Offers.png',
                             fit: BoxFit.cover,
@@ -338,46 +343,86 @@ class _OrderType extends StatelessWidget {
   const _OrderType({
     required this.s,
     required this.title,
-    required this.asset,
+    required this.selectedAsset,
+    required this.unselectedAsset,
     required this.selected,
     required this.onTap,
   });
 
   final LucizScale s;
   final String title;
-  final String asset;
+  final String selectedAsset;
+  final String unselectedAsset;
   final bool selected;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    final color = selected ? LucizColors.brandRed : const Color(0xFFA3A3A3);
+    final Color borderColor =
+    selected ? LucizColors.brandRed : const Color(0xFFA3A3A3);
+
+    final double circleSize = selected ? s.r(82) : s.r(72);
+    final double iconSize = selected ? s.r(54) : s.r(46);
 
     return GestureDetector(
       onTap: onTap,
+      behavior: HitTestBehavior.opaque,
       child: SizedBox(
         width: s.w(96),
+        height: s.h(112),
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            Container(
-              width: s.r(72),
-              height: s.r(72),
-              padding: EdgeInsets.all(s.r(12)),
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 220),
+              curve: Curves.easeOut,
+              width: circleSize,
+              height: circleSize,
+              padding: EdgeInsets.all(selected ? s.r(8) : s.r(10)),
               decoration: BoxDecoration(
+                color: Colors.white,
                 shape: BoxShape.circle,
-                border: Border.all(color: color, width: s.r(2)),
+                border: Border.all(
+                  color: borderColor,
+                  width: selected ? s.r(2.6) : s.r(2),
+                ),
+                boxShadow: selected
+                    ? [
+                  BoxShadow(
+                    blurRadius: 12,
+                    offset: const Offset(0, 5),
+                    color: LucizColors.brandRed.withValues(alpha: 0.16),
+                  ),
+                ]
+                    : [],
               ),
-              child: SvgPicture.asset(asset, fit: BoxFit.contain),
+              child: Center(
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 220),
+                  curve: Curves.easeOut,
+                  width: iconSize,
+                  height: iconSize,
+                  child: SvgPicture.asset(
+                    selected ? selectedAsset : unselectedAsset,
+                    fit: BoxFit.contain,
+                  ),
+                ),
+              ),
             ),
-            SizedBox(height: s.h(7)),
-            Text(
-              title,
-              maxLines: 1,
+            SizedBox(height: selected ? s.h(8) : s.h(7)),
+            AnimatedDefaultTextStyle(
+              duration: const Duration(milliseconds: 220),
+              curve: Curves.easeOut,
               style: TextStyle(
                 fontFamily: 'Alexandria',
-                fontSize: s.font(13),
+                fontSize: selected ? s.font(14) : s.font(13),
                 fontWeight: FontWeight.w700,
-                color: color,
+                color: borderColor,
+              ),
+              child: Text(
+                title,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
             ),
           ],

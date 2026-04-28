@@ -29,6 +29,9 @@ flutter:
     - assets/images/notification-bell.svg
     - assets/images/Special_Offers.png
     - assets/images/on1.svg
+    - assets/images/Delivery-unselected.svg
+    - assets/images/dine-in-selected.svg
+    - assets/images/pickup-selected.svg
     - assets/images/on2.svg
     - assets/images/on3.svg
     - assets/images/delivery_icon.svg
