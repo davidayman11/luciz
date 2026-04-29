@@ -5,6 +5,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../../../core/responsive/luciz_scale.dart';
 import '../../../../../core/theme/luciz_colors.dart';
+import '../../widgets/quantity_outline_control.dart';
 
 class HomeTabPage extends StatefulWidget {
   const HomeTabPage({super.key});
@@ -44,13 +45,16 @@ class _HomeTabPageState extends State<HomeTabPage> {
     ),
   ];
 
-  int get cartCount =>
-      products.fold<int>(0, (sum, item) => sum + item.quantity);
+  int get cartCount {
+    return products.fold<int>(0, (sum, item) => sum + item.quantity);
+  }
 
-  int get cartTotal => products.fold<int>(
-        0,
-        (sum, item) => sum + (item.price * item.quantity),
-      );
+  int get cartTotal {
+    return products.fold<int>(
+      0,
+      (sum, item) => sum + (item.price * item.quantity),
+    );
+  }
 
   bool get hasCartItems => cartCount > 0;
 
@@ -63,7 +67,9 @@ class _HomeTabPageState extends State<HomeTabPage> {
   void _startBannerAutoSlide() {
     _bannerTimer = Timer.periodic(const Duration(seconds: 3), (_) {
       if (!_bannerController.hasClients) return;
+
       final nextIndex = bannerIndex == 2 ? 0 : bannerIndex + 1;
+
       _bannerController.animateToPage(
         nextIndex,
         duration: const Duration(milliseconds: 450),
@@ -73,12 +79,16 @@ class _HomeTabPageState extends State<HomeTabPage> {
   }
 
   void _increaseProduct(int index) {
-    setState(() => products[index].quantity++);
+    setState(() {
+      products[index].quantity++;
+    });
   }
 
   void _decreaseProduct(int index) {
     setState(() {
-      if (products[index].quantity > 0) products[index].quantity--;
+      if (products[index].quantity > 0) {
+        products[index].quantity--;
+      }
     });
   }
 
@@ -105,232 +115,268 @@ class _HomeTabPageState extends State<HomeTabPage> {
             fit: BoxFit.cover,
           ),
         ),
+
         SafeArea(
           child: SingleChildScrollView(
             padding: EdgeInsets.fromLTRB(
               s.w(10),
               s.h(6),
               s.w(10),
-              hasCartItems ? s.h(95) : s.h(20),
+              s.h(20),
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _Header(s: s),
-                SizedBox(height: s.h(18)),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: s.w(8)),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _OrderType(
-                        s: s,
-                        title: 'Delivery',
-                        selectedAsset: 'assets/images/delivery_icon.svg',
-                        unselectedAsset:
-                            'assets/images/Delivery-unselected.svg',
-                        selected: selectedOrderType == 0,
-                        onTap: () => setState(() => selectedOrderType = 0),
-                      ),
-                      _OrderType(
-                        s: s,
-                        title: 'Self-pickup',
-                        selectedAsset: 'assets/images/pickup-selected.svg',
-                        unselectedAsset: 'assets/images/self_pickup_icon.svg',
-                        selected: selectedOrderType == 1,
-                        onTap: () => setState(() => selectedOrderType = 1),
-                      ),
-                      _OrderType(
-                        s: s,
-                        title: 'Dine-in',
-                        selectedAsset: 'assets/images/dine-in-selected.svg',
-                        unselectedAsset: 'assets/images/dine_in_icon.svg',
-                        selected: selectedOrderType == 2,
-                        onTap: () => setState(() => selectedOrderType = 2),
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(height: s.h(24)),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: s.w(8)),
-                  child: _SectionTitle(
-                    s: s,
-                    title: 'Special offers',
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                SizedBox(height: s.h(10)),
-                SizedBox(
-                  height: s.h(160),
-                  child: PageView.builder(
-                    controller: _bannerController,
-                    itemCount: 3,
-                    onPageChanged: (i) => setState(() => bannerIndex = i),
-                    itemBuilder: (context, index) {
-                      return Padding(
-                        padding: EdgeInsets.symmetric(horizontal: s.w(8)),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(s.r(15)),
-                          clipBehavior: Clip.antiAlias,
-                          child: Image.asset(
-                            'assets/images/Special_Offers.png',
-                            fit: BoxFit.cover,
-                            width: double.infinity,
-                            height: double.infinity,
-                          ),
+            child: AnimatedPadding(
+              duration: hasCartItems
+                  ? const Duration(milliseconds: 320)
+                  : const Duration(milliseconds: 140),
+              curve: Curves.easeOutCubic,
+              padding: EdgeInsets.only(
+                bottom: hasCartItems ? s.h(75) : 0,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _Header(s: s),
+
+                  SizedBox(height: s.h(18)),
+
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: s.w(8)),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _OrderType(
+                          s: s,
+                          title: 'Delivery',
+                          selectedAsset: 'assets/images/delivery_icon.svg',
+                          unselectedAsset:
+                              'assets/images/Delivery-unselected.svg',
+                          selected: selectedOrderType == 0,
+                          onTap: () => setState(() => selectedOrderType = 0),
                         ),
+                        _OrderType(
+                          s: s,
+                          title: 'Self-pickup',
+                          selectedAsset: 'assets/images/pickup-selected.svg',
+                          unselectedAsset:
+                              'assets/images/self_pickup_icon.svg',
+                          selected: selectedOrderType == 1,
+                          onTap: () => setState(() => selectedOrderType = 1),
+                        ),
+                        _OrderType(
+                          s: s,
+                          title: 'Dine-in',
+                          selectedAsset: 'assets/images/dine-in-selected.svg',
+                          unselectedAsset: 'assets/images/dine_in_icon.svg',
+                          selected: selectedOrderType == 2,
+                          onTap: () => setState(() => selectedOrderType = 2),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  SizedBox(height: s.h(24)),
+
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: s.w(8)),
+                    child: _SectionTitle(
+                      s: s,
+                      title: 'Special offers',
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+
+                  SizedBox(height: s.h(10)),
+
+                  SizedBox(
+                    height: s.h(160),
+                    child: PageView.builder(
+                      controller: _bannerController,
+                      itemCount: 3,
+                      onPageChanged: (i) => setState(() => bannerIndex = i),
+                      itemBuilder: (context, index) {
+                        return Padding(
+                          padding: EdgeInsets.symmetric(horizontal: s.w(8)),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(s.r(15)),
+                            clipBehavior: Clip.antiAlias,
+                            child: Image.asset(
+                              'assets/images/Special_Offers.png',
+                              fit: BoxFit.cover,
+                              width: double.infinity,
+                              height: double.infinity,
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+
+                  SizedBox(height: s.h(9)),
+
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: List.generate(3, (i) {
+                      final active = i == bannerIndex;
+
+                      return AnimatedContainer(
+                        duration: const Duration(milliseconds: 200),
+                        curve: Curves.easeOut,
+                        margin: EdgeInsets.symmetric(horizontal: s.w(4)),
+                        width: active ? s.w(25) : s.w(18),
+                        height: s.h(4),
+                        decoration: BoxDecoration(
+                          color: active
+                              ? LucizColors.brandRed
+                              : const Color(0xFFE0E0E0),
+                          borderRadius: BorderRadius.circular(s.r(20)),
+                        ),
+                      );
+                    }),
+                  ),
+
+                  SizedBox(height: s.h(26)),
+
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: s.w(8)),
+                    child: _SectionTitle(
+                      s: s,
+                      title: 'Our menu',
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+
+                  SizedBox(height: s.h(12)),
+
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: s.w(8)),
+                    child: GridView.count(
+                      crossAxisCount: 3,
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      crossAxisSpacing: s.w(10),
+                      mainAxisSpacing: s.h(14),
+                      childAspectRatio: 0.95,
+                      children: [
+                        _MenuCard(
+                          s: s,
+                          title: 'Burgers',
+                          asset: 'assets/images/Burgers_logo.png',
+                          imageWidth: 112,
+                          imageHeight: 90,
+                          right: -30,
+                          bottom: -4,
+                        ),
+                        _MenuCard(
+                          s: s,
+                          title: 'Chicken',
+                          asset: 'assets/images/Chicken_logo.png',
+                          imageWidth: 116,
+                          imageHeight: 98,
+                          right: -25,
+                          bottom: -5,
+                        ),
+                        _MenuCard(
+                          s: s,
+                          title: 'Sides',
+                          asset: 'assets/images/Sides_logo.png',
+                          imageWidth: 112,
+                          imageHeight: 90,
+                          right: -26,
+                          bottom: -4,
+                        ),
+                        _MenuCard(
+                          s: s,
+                          title: 'Drinks',
+                          asset: 'assets/images/Drinks_logo.png',
+                          imageWidth: 116,
+                          imageHeight: 92,
+                          right: -25,
+                          bottom: -8,
+                        ),
+                        _MenuCard(
+                          s: s,
+                          title: 'Desserts',
+                          asset: 'assets/images/Desserts_logo.png',
+                          imageWidth: 120,
+                          imageHeight: 95,
+                          right: -33,
+                          bottom: -4,
+                        ),
+                        _MenuCard(
+                          s: s,
+                          title: 'Extras',
+                          asset: 'assets/images/Extras_logo.png',
+                          imageWidth: 108,
+                          imageHeight: 92,
+                          right: -25,
+                          bottom: -8,
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  SizedBox(height: s.h(23)),
+
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: s.w(2)),
+                    child: _SectionTitle(
+                      s: s,
+                      title: 'Recommended for you',
+                      fontWeight: FontWeight.w600,
+                      color: LucizColors.brandRed,
+                    ),
+                  ),
+
+                  SizedBox(height: s.h(10)),
+
+                  ListView.separated(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: products.length,
+                    separatorBuilder: (_, __) => SizedBox(height: s.h(14)),
+                    itemBuilder: (context, index) {
+                      final product = products[index];
+
+                      return _RecommendedProductCard(
+                        s: s,
+                        product: product,
+                        onAdd: () => _increaseProduct(index),
+                        onRemove: () => _decreaseProduct(index),
                       );
                     },
                   ),
-                ),
-                SizedBox(height: s.h(9)),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: List.generate(3, (i) {
-                    final active = i == bannerIndex;
-                    return AnimatedContainer(
-                      duration: const Duration(milliseconds: 200),
-                      margin: EdgeInsets.symmetric(horizontal: s.w(4)),
-                      width: active ? s.w(25) : s.w(18),
-                      height: s.h(4),
-                      decoration: BoxDecoration(
-                        color: active
-                            ? LucizColors.brandRed
-                            : const Color(0xFFE0E0E0),
-                        borderRadius: BorderRadius.circular(s.r(20)),
-                      ),
-                    );
-                  }),
-                ),
-                SizedBox(height: s.h(26)),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: s.w(8)),
-                  child: _SectionTitle(
-                    s: s,
-                    title: 'Our menu',
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                SizedBox(height: s.h(12)),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: s.w(8)),
-                  child: GridView.count(
-                    crossAxisCount: 3,
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    crossAxisSpacing: s.w(10),
-                    mainAxisSpacing: s.h(14),
-                    childAspectRatio: 0.95,
-                    children: [
-                      _MenuCard(
-                        s: s,
-                        title: 'Burgers',
-                        asset: 'assets/images/Burgers_logo.png',
-                        imageWidth: 112,
-                        imageHeight: 90,
-                        right: -30,
-                        bottom: -4,
-                      ),
-                      _MenuCard(
-                        s: s,
-                        title: 'Chicken',
-                        asset: 'assets/images/Chicken_logo.png',
-                        imageWidth: 116,
-                        imageHeight: 98,
-                        right: -25,
-                        bottom: -5,
-                      ),
-                      _MenuCard(
-                        s: s,
-                        title: 'Sides',
-                        asset: 'assets/images/Sides_logo.png',
-                        imageWidth: 112,
-                        imageHeight: 90,
-                        right: -26,
-                        bottom: -4,
-                      ),
-                      _MenuCard(
-                        s: s,
-                        title: 'Drinks',
-                        asset: 'assets/images/Drinks_logo.png',
-                        imageWidth: 116,
-                        imageHeight: 92,
-                        right: -25,
-                        bottom: -8,
-                      ),
-                      _MenuCard(
-                        s: s,
-                        title: 'Desserts',
-                        asset: 'assets/images/Desserts_logo.png',
-                        imageWidth: 120,
-                        imageHeight: 95,
-                        right: -33,
-                        bottom: -4,
-                      ),
-                      _MenuCard(
-                        s: s,
-                        title: 'Extras',
-                        asset: 'assets/images/Extras_logo.png',
-                        imageWidth: 108,
-                        imageHeight: 92,
-                        right: -25,
-                        bottom: -8,
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(height: s.h(23)),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: s.w(2)),
-                  child: _SectionTitle(
-                    s: s,
-                    title: 'Recommended for you',
-                    fontWeight: FontWeight.w600,
-                    color: LucizColors.brandRed,
-                  ),
-                ),
-                SizedBox(height: s.h(10)),
-                ListView.separated(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: products.length,
-                  separatorBuilder: (_, __) => SizedBox(height: s.h(14)),
-                  itemBuilder: (context, index) {
-                    final product = products[index];
-                    return _RecommendedProductCard(
-                      s: s,
-                      product: product,
-                      onAdd: () => _increaseProduct(index),
-                      onRemove: () => _decreaseProduct(index),
-                    );
-                  },
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
 
-        // ── Cart bar: slide up from bottom + fade, ناعمة وخفيفة ──
         Positioned(
           left: s.w(12),
           right: s.w(12),
           bottom: s.h(10),
           child: SafeArea(
             top: false,
-            child: AnimatedSlide(
-              duration: const Duration(milliseconds: 400),
-              curve: Curves.easeOutCubic,
-              offset: hasCartItems ? Offset.zero : const Offset(0, 2),
-              child: AnimatedOpacity(
-                duration: const Duration(milliseconds: 350),
-                curve: Curves.easeOut,
-                opacity: hasCartItems ? 1.0 : 0.0,
-                child: _CartBar(
-                  s: s,
-                  cartCount: cartCount,
-                  cartTotal: cartTotal,
+            child: IgnorePointer(
+              ignoring: !hasCartItems,
+              child: AnimatedSlide(
+                duration: hasCartItems
+                    ? const Duration(milliseconds: 400)
+                    : const Duration(milliseconds: 170),
+                curve: Curves.easeOutCubic,
+                offset: hasCartItems ? Offset.zero : const Offset(0, 2),
+                child: AnimatedOpacity(
+                  duration: hasCartItems
+                      ? const Duration(milliseconds: 350)
+                      : const Duration(milliseconds: 120),
+                  curve: Curves.easeOut,
+                  opacity: hasCartItems ? 1.0 : 0.0,
+                  child: _CartBar(
+                    s: s,
+                    cartCount: cartCount,
+                    cartTotal: cartTotal,
+                  ),
                 ),
               ),
             ),
@@ -340,10 +386,6 @@ class _HomeTabPageState extends State<HomeTabPage> {
     );
   }
 }
-
-// ─────────────────────────────────────────────
-// Models & simple widgets (unchanged)
-// ─────────────────────────────────────────────
 
 class _ProductItem {
   _ProductItem({
@@ -363,6 +405,7 @@ class _ProductItem {
 
 class _Header extends StatelessWidget {
   const _Header({required this.s});
+
   final LucizScale s;
 
   @override
@@ -469,8 +512,9 @@ class _OrderType extends StatelessWidget {
   Widget build(BuildContext context) {
     final Color borderColor =
         selected ? LucizColors.brandRed : const Color(0xFFA3A3A3);
-    final double circleSize = selected ? s.r(82) : s.r(72);
-    final double iconSize = selected ? s.r(54) : s.r(46);
+
+    final double circleSize = selected ? s.r(75) : s.r(65);
+    final double iconSize = selected ? s.r(45) : s.r(40);
 
     return GestureDetector(
       onTap: onTap,
@@ -493,7 +537,10 @@ class _OrderType extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: Colors.white,
                     shape: BoxShape.circle,
-                    border: Border.all(color: borderColor, width: selected ? s.r(2.6) : s.r(2)),
+                    border: Border.all(
+                      color: borderColor,
+                      width: selected ? s.r(2.6) : s.r(2),
+                    ),
                   ),
                   child: Center(
                     child: AnimatedContainer(
@@ -523,7 +570,11 @@ class _OrderType extends StatelessWidget {
                     fontWeight: FontWeight.w700,
                     color: borderColor,
                   ),
-                  child: Text(title, maxLines: 1, overflow: TextOverflow.ellipsis),
+                  child: Text(
+                    title,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
               ),
             ),
@@ -619,10 +670,6 @@ class _MenuCard extends StatelessWidget {
   }
 }
 
-// ─────────────────────────────────────────────
-// Product card — AnimatedSwitcher ناعم بدون bounce
-// ─────────────────────────────────────────────
-
 class _RecommendedProductCard extends StatelessWidget {
   const _RecommendedProductCard({
     required this.s,
@@ -645,7 +692,10 @@ class _RecommendedProductCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(s.r(9)),
-        border: Border.all(color: const Color(0xFFE8E8E8), width: 1),
+        border: Border.all(
+          color: const Color(0xFFE8E8E8),
+          width: 1,
+        ),
         boxShadow: [
           BoxShadow(
             blurRadius: 5,
@@ -662,7 +712,10 @@ class _RecommendedProductCard extends StatelessWidget {
             bottom: s.h(16),
             child: SizedBox(
               width: s.w(98),
-              child: Image.asset(product.asset, fit: BoxFit.contain),
+              child: Image.asset(
+                product.asset,
+                fit: BoxFit.contain,
+              ),
             ),
           ),
           Positioned(
@@ -711,20 +764,44 @@ class _RecommendedProductCard extends StatelessWidget {
               ),
             ),
           ),
-
-          // ── Smooth AnimatedSwitcher: fade + scale خفيف بدون bounce ──
           Positioned(
             right: s.w(10),
             bottom: s.h(10),
             child: AnimatedSwitcher(
-              duration: const Duration(milliseconds: 320),
+              duration: hasQuantity
+                  ? const Duration(milliseconds: 320)
+                  : const Duration(milliseconds: 70),
+              reverseDuration: const Duration(milliseconds: 70),
               switchInCurve: Curves.easeOut,
               switchOutCurve: Curves.easeIn,
+              layoutBuilder: (currentChild, previousChildren) {
+                return Stack(
+                  alignment: Alignment.centerRight,
+                  clipBehavior: Clip.none,
+                  children: [
+                    ...previousChildren,
+                    if (currentChild != null) currentChild,
+                  ],
+                );
+              },
               transitionBuilder: (child, animation) {
+                final bool isAddButton =
+                    child.key == const ValueKey('add-button');
+
+                if (isAddButton) {
+                  return FadeTransition(
+                    opacity: animation,
+                    child: child,
+                  );
+                }
+
                 return FadeTransition(
                   opacity: animation,
                   child: ScaleTransition(
-                    scale: Tween<double>(begin: 0.82, end: 1.0).animate(
+                    scale: Tween<double>(
+                      begin: 0.82,
+                      end: 1.0,
+                    ).animate(
                       CurvedAnimation(
                         parent: animation,
                         curve: Curves.easeOut,
@@ -735,15 +812,15 @@ class _RecommendedProductCard extends StatelessWidget {
                 );
               },
               child: hasQuantity
-                  ? _QuantityOutlineControl(
-                      key: const ValueKey('quantity'),
+                  ? QuantityOutlineControl(
+                      key: const ValueKey('quantity-control'),
                       s: s,
                       quantity: product.quantity,
                       onRemove: onRemove,
                       onAdd: onAdd,
                     )
                   : _AddButton(
-                      key: const ValueKey('add'),
+                      key: const ValueKey('add-button'),
                       s: s,
                       onTap: onAdd,
                     ),
@@ -755,122 +832,12 @@ class _RecommendedProductCard extends StatelessWidget {
   }
 }
 
-// ─────────────────────────────────────────────
-// Quantity control — رقم بيتغير بـ fade ناعم
-// ─────────────────────────────────────────────
-
-class _QuantityOutlineControl extends StatelessWidget {
-  const _QuantityOutlineControl({
+class _AddButton extends StatelessWidget {
+  const _AddButton({
     super.key,
     required this.s,
-    required this.quantity,
-    required this.onRemove,
-    required this.onAdd,
+    required this.onTap,
   });
-
-  final LucizScale s;
-  final int quantity;
-  final VoidCallback onRemove;
-  final VoidCallback onAdd;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: s.h(36),
-      padding: EdgeInsets.fromLTRB(s.w(4), s.h(3), s.w(3), s.h(3)),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(s.r(999)),
-        border: Border.all(color: const Color(0xFFE1E1E1), width: s.r(1)),
-        boxShadow: [
-          BoxShadow(
-            blurRadius: 7,
-            offset: const Offset(0, 2),
-            color: Colors.black.withValues(alpha: 0.07),
-          ),
-        ],
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          GestureDetector(
-            onTap: onRemove,
-            behavior: HitTestBehavior.opaque,
-            child: Container(
-              width: s.r(30),
-              height: s.r(30),
-              decoration: const BoxDecoration(
-                color: Color(0xFFF1F1F1),
-                shape: BoxShape.circle,
-              ),
-              child: Center(
-                child: quantity == 1
-                    ? SvgPicture.asset(
-                        'assets/images/trash-icon.svg',
-                        width: s.r(18),
-                        height: s.r(18),
-                        fit: BoxFit.contain,
-                        colorFilter: const ColorFilter.mode(
-                          Color(0xFF7F7F7F),
-                          BlendMode.srcIn,
-                        ),
-                      )
-                    : Icon(Icons.remove, size: s.r(19), color: const Color(0xFF7F7F7F)),
-              ),
-            ),
-          ),
-          SizedBox(width: s.w(11)),
-          // الرقم بيتغير بـ fade ناعم
-          AnimatedSwitcher(
-            duration: const Duration(milliseconds: 200),
-            switchInCurve: Curves.easeOut,
-            switchOutCurve: Curves.easeIn,
-            transitionBuilder: (child, animation) {
-              return FadeTransition(opacity: animation, child: child);
-            },
-            child: Text(
-              '$quantity',
-              key: ValueKey(quantity),
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontFamily: 'Poppins',
-                fontSize: s.font(14),
-                fontWeight: FontWeight.w600,
-                color: const Color(0xFF000000),
-                height: 1.0,
-                letterSpacing: 0,
-              ),
-            ),
-          ),
-          SizedBox(width: s.w(11)),
-          GestureDetector(
-            onTap: onAdd,
-            behavior: HitTestBehavior.opaque,
-            child: Container(
-              width: s.r(34),
-              height: s.r(34),
-              decoration: BoxDecoration(
-                color: LucizColors.brandRed,
-                shape: BoxShape.circle,
-                boxShadow: [
-                  BoxShadow(
-                    blurRadius: 6,
-                    offset: const Offset(0, 2),
-                    color: LucizColors.brandRed.withValues(alpha: 0.25),
-                  ),
-                ],
-              ),
-              child: Icon(Icons.add, size: s.r(27), color: Colors.white),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _AddButton extends StatelessWidget {
-  const _AddButton({super.key, required this.s, required this.onTap});
 
   final LucizScale s;
   final VoidCallback onTap;
@@ -894,7 +861,11 @@ class _AddButton extends StatelessWidget {
             ),
           ],
         ),
-        child: Icon(Icons.add, size: s.r(22), color: Colors.white),
+        child: Icon(
+          Icons.add,
+          size: s.r(22),
+          color: Colors.white,
+        ),
       ),
     );
   }
@@ -937,13 +908,17 @@ class _CartBar extends StatelessWidget {
               borderRadius: BorderRadius.circular(s.r(5)),
             ),
             child: Center(
-              child: Text(
-                '$cartCount',
-                style: TextStyle(
-                  fontFamily: 'Alexandria',
-                  fontSize: s.font(14),
-                  fontWeight: FontWeight.w800,
-                  color: LucizColors.brandRed,
+              child: AnimatedSwitcher(
+                duration: const Duration(milliseconds: 140),
+                child: Text(
+                  '$cartCount',
+                  key: ValueKey<int>(cartCount),
+                  style: TextStyle(
+                    fontFamily: 'Alexandria',
+                    fontSize: s.font(14),
+                    fontWeight: FontWeight.w800,
+                    color: LucizColors.brandRed,
+                  ),
                 ),
               ),
             ),
@@ -959,13 +934,17 @@ class _CartBar extends StatelessWidget {
             ),
           ),
           const Spacer(),
-          Text(
-            '$cartTotal EGP',
-            style: TextStyle(
-              fontFamily: 'Alexandria',
-              fontSize: s.font(12),
-              fontWeight: FontWeight.w800,
-              color: Colors.white,
+          AnimatedSwitcher(
+            duration: const Duration(milliseconds: 140),
+            child: Text(
+              '$cartTotal EGP',
+              key: ValueKey<int>(cartTotal),
+              style: TextStyle(
+                fontFamily: 'Alexandria',
+                fontSize: s.font(12),
+                fontWeight: FontWeight.w800,
+                color: Colors.white,
+              ),
             ),
           ),
         ],

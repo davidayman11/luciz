@@ -6,6 +6,7 @@ import '../widgets/luciz_home_bottom_nav.dart';
 import 'tabs/account_tab_page.dart';
 import 'tabs/cart_tab_page.dart';
 import 'tabs/home_tab_page.dart';
+
 import 'tabs/rewards_tab_page.dart';
 
 class HomeScreen extends StatefulWidget {
